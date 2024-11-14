@@ -4,6 +4,7 @@ import { IInputProps } from "../../lib/constants";
 const SearchInput = (props: IInputProps) => {
 
     const [showSelector, setShowSelector] = useState(false);
+    const [forcedValue, setForcedValue] = useState('');
 
     const {
         title,
@@ -11,6 +12,7 @@ const SearchInput = (props: IInputProps) => {
         onChange,
         onSelect,
         data,
+        disabled
     } = props;
 
     useEffect(() => {
@@ -23,8 +25,12 @@ const SearchInput = (props: IInputProps) => {
                 <input required
                     type="text"
                     className="px-4 py-2 text-lg outline-none border-2 border-gray-400 rounded hover:border-gray-600 duration-200 peer focus:border-indigo-600 bg-white"
-                    value={value}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+                    value={forcedValue || value}
+                    disabled={disabled}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        onChange(e.target.value);
+                        if (!e.target.value) setShowSelector(false)
+                    }}
                 />
                 <span className="absolute left-0 top-0 px-1 text-lg uppercase tracking-wide peer-focus:text-indigo-600 pointer-events-none duration-200 peer-focus:text-sm peer-focus:-translate-y-5 bg-white ml-2 peer-valid:text-sm peer-valid:-translate-y-5 peer-valid:rounded-md">
                     {title}
@@ -35,7 +41,11 @@ const SearchInput = (props: IInputProps) => {
                     {data.map((item, index) => (
                         <div
                             key={index}
-                            onClick={() => onSelect(item)}
+                            onClick={() => {
+                                setForcedValue(item.name);
+                                onSelect(item);
+                                setShowSelector(false);
+                            }}
                             className="px-4 py-2 cursor-pointer hover:bg-indigo-600 hover:text-white"
                         >
                             {item.name}
