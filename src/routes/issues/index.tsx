@@ -9,7 +9,8 @@ import InfoPanel from "../../components/info-panel";
 import axios, { AxiosResponse } from "axios";
 import Loader from "react-ts-loaders";
 import Grid from "../../components/grid";
-import { QueryFunctionContext, useQuery, QueryKey } from "react-query";
+import { useQuery } from "react-query";
+import Modal from "../../components/modal";
 
 const IssuesPage = () => {
     const [username, setUsername] = useState('');
@@ -19,6 +20,7 @@ const IssuesPage = () => {
     const [issuesData, setIssuesData] = useState<IGHIssue[]>([]);
     const [loadingSelectors, setLoadingSelectors] = useState(false);
     const [loadingGrid, setLoadingGrid] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const handleUserChange = async (value: string) => {
         if (value.length > 2 && !loadingSelectors) {
@@ -53,8 +55,9 @@ const IssuesPage = () => {
         }
     }
 
-    const searchIssues = async ({querykey: [string, number, number]}): Promise<any[]> => {
-        const [, perpage, page] = queryKey;
+    const searchIssues = async (): any[] => {
+        const { page } = store;
+        const perpage = import.meta.env.VITE_PER_PAGE;
         if (loadingGrid) return issuesData || []
         try {
             setLoadingGrid(true)
@@ -113,6 +116,11 @@ const IssuesPage = () => {
         store.setRepo(newValue);
     };
 
+    const handleIssueClick = (item: IGHIssue) => {
+        store.setIssue(item);
+        setShowModal(true);
+    }
+
     useEffect(() => {
         //load repos if user selected
         async function searchRepos() {
@@ -151,17 +159,16 @@ const IssuesPage = () => {
 
     useEffect(() => {
         //load issues if repo selected
-        if (repo) {
-            searchIssues({queryKey: ['issuesData', 30, 1]});
+        if (username && repo) {
+            searchIssues();
         }
     }, [repo])
 
     const InfoPanelObserver = observer(InfoPanel);
 
     function LazyGrid() {
-        const perpage = import.meta.env.VITE_PER_PAGE;
-        const { data } = useQuery<any[], [string, number, number]>({queryKey: ['issuesData', perpage, 1]}, searchIssues, { suspense: true });
-        return <Grid data={data || []} getData={searchIssues}/>
+        const { data } = useQuery('issuesData', searchIssues, { suspense: true });
+        return <Grid data={data || []} getData={searchIssues} onClick={handleIssueClick}/>
     }
 
     return (
@@ -169,14 +176,13 @@ const IssuesPage = () => {
         <search className="m-6 block text-center container mx-auto lg:flex justify-center items-center">
         <SearchInput title="username" onSelect={handleUserSelect} onChange={handleUserChange} data={userData} disabled={loadingSelectors}/>
             {loadingSelectors ? <Loader type="dualring" color="#080808" size={40} /> : <FaSearch size={30}/>}
-        <SearchInput title="repository" value={repo} onSelect={handleRepoSelect} onChange={handleRepoChange} data={repoData} disabled={loadingSelectors || !username}/>
+        <SearchInput title="repository" value={repo} onSelect={handleRepoSelect} onChange={handleRepoChange} data={repoData} controlled disabled={loadingSelectors || !username}/>
         </search>
         <InfoPanelObserver />
         <Suspense fallback={<Loader type="dualring" color="#080808" size={80} className="absolute top-1/2 left-1/2" />}>
             <LazyGrid />
         </Suspense>
-        {/* {loadingGrid && <Loader type="dualring" color="#080808" size={100} className="absolute top-1/2 left-1/2" />} */}
-        {/* <Grid data={issuesData} getData={searchIssues} /> */}
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)} />
         </>
     )
 }

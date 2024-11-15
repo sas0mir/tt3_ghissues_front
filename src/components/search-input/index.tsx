@@ -12,6 +12,7 @@ const SearchInput = (props: IInputProps) => {
         onChange,
         onSelect,
         data,
+        controlled,
         disabled
     } = props;
 
@@ -42,6 +43,10 @@ const SearchInput = (props: IInputProps) => {
                         <div
                             key={index}
                             onClick={() => {
+                                if (controlled) {
+                                    //pass value from within
+                                    //setForcedValue(item.name);
+                                }
                                 setForcedValue(item.name);
                                 onSelect(item);
                                 setShowSelector(false);

@@ -4,14 +4,22 @@ export interface IInputProps {
     onChange: (value: string) => void,
     onSelect: (value: any) => void,
     data: any[],
-    disabled?: boolean
+    disabled?: boolean,
+    controlled?: boolean
 }
 
 export interface IGridProps {
     rowsPerPage?: number,
-    data: any[] | undefined,
-    getData: ({queryKey}: { queryKey: [string, number, number]}) => any[],
-  }
+    data: any[],
+    getData: () => any[],
+    onClick?: (item: IGHIssue) => void
+}
+
+export interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    data?: any | null;
+}
 
 export interface IGHUser {
     score: number,

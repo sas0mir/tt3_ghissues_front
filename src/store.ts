@@ -6,6 +6,8 @@ class Store {
     repo: IGHRepo | null = null;
     repos: IGHRepo[] = [];
     issues: IGHIssue[] = [];
+    issue: IGHIssue | null = null;
+    page: number = 1;
 
     constructor() {
         makeAutoObservable(this);
@@ -25,6 +27,14 @@ class Store {
 
     setIssues(issues: IGHIssue[]) {
         this.issues = issues;
+    }
+
+    setIssue(issue: IGHIssue) {
+        this.issue = issue;
+    }
+
+    setPage(page: number) {
+        this.page = page;
     }
 }
 

@@ -1,4 +1,14 @@
 # React + TypeScript + Vite
+tech task for hiring& Github issues viewer
+![Demo GIF](./src/assets/caption_tt3.gif)
+
+Build container
+docker build -t backend-image-name .  # для бэкенда
+docker build -t frontend-image-name .  # для фронтенда
+
+Start container
+docker run -p 3000:3000 backend-image-name  # запускает бэкенд на порту 3000
+docker run -p 8080:80 frontend-image-name  # запускает фронтенд на порту 8080
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

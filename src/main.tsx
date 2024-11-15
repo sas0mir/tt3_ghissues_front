@@ -6,6 +6,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import ErrorPage from './routes/error-page/index.tsx'
 import IssuesPage from './routes/issues/index.tsx'
 import LogsPage from './routes/logs/index.tsx'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 const router = createBrowserRouter([
   {
@@ -27,10 +28,14 @@ const router = createBrowserRouter([
       }
     ]
   },
-])
+]);
+
+const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router}/>
+    </QueryClientProvider>
   </StrictMode>,
 )
